@@ -31,11 +31,27 @@ public class OllamaServiceImpl implements OllamaService {
     @Value("classpath:templates/get-capital-prompt.st")
     private Resource getCapitalPrompt;
 
+
+    @Value("classpath:templates/get-capital-with-info-prompt.st")
+    private Resource getCapitalWithInfoPrompt;
+
     @Override
     public Answer getCapital(GetCapitalRequest getCapitalRequest) {
-       // PromptTemplate promptTemplate = new PromptTemplate("What is the capital of " +
+        // PromptTemplate promptTemplate = new PromptTemplate("What is the capital of " +
         //        getCapitalRequest.stateOrCountry() + "?");
         PromptTemplate promptTemplate = new PromptTemplate(getCapitalPrompt);
+        Prompt prompt = promptTemplate.create(Map.of("stateOrCountry",getCapitalRequest.stateOrCountry()));
+
+        ChatResponse chatResponse = chatModel.call(prompt);
+
+        return new Answer(chatResponse.getResult().getOutput().getText());
+    }
+
+
+    @Override
+    public Answer getCapitalWithInfo(GetCapitalRequest getCapitalRequest) {
+        System.out.println("Calling capital with info");
+        PromptTemplate promptTemplate = new PromptTemplate(getCapitalWithInfoPrompt);
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry",getCapitalRequest.stateOrCountry()));
 
         ChatResponse chatResponse = chatModel.call(prompt);

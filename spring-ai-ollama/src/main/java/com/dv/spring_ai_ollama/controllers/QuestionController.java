@@ -17,6 +17,11 @@ public class QuestionController {
         this.ollamaService = ollamaService;
     }
 
+    @PostMapping("/capitalWithInfo")
+    public Answer getCapitalWithInfo(@RequestBody GetCapitalRequest getCapitalRequest) {
+        return ollamaService.getCapitalWithInfo(getCapitalRequest);
+    }
+
     @PostMapping("/capital")
     public Answer getCapital(@RequestBody GetCapitalRequest getCapitalRequest) {
         return ollamaService.getCapital(getCapitalRequest);
