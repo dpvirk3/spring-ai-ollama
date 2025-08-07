@@ -1,8 +1,10 @@
 package com.dv.spring_ai_ollama.controllers;
 
 import com.dv.spring_ai_ollama.model.Answer;
+import com.dv.spring_ai_ollama.model.GetCapitalRequest;
 import com.dv.spring_ai_ollama.model.Question;
 import com.dv.spring_ai_ollama.services.OllamaService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +15,11 @@ public class QuestionController {
 
     public QuestionController(OllamaService ollamaService) {
         this.ollamaService = ollamaService;
+    }
+
+    @PostMapping("/capital")
+    public Answer getCapital(@RequestBody GetCapitalRequest getCapitalRequest) {
+        return ollamaService.getCapital(getCapitalRequest);
     }
 
     @PostMapping("/ask")
