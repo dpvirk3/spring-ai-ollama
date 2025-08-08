@@ -4,11 +4,15 @@ import com.dv.spring_ai_ollama.model.Answer;
 import com.dv.spring_ai_ollama.model.GetCapitalRequest;
 import com.dv.spring_ai_ollama.model.Question;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.ollama.OllamaChatModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -44,9 +48,23 @@ public class OllamaServiceImpl implements OllamaService {
 
         ChatResponse chatResponse = chatModel.call(prompt);
 
-        return new Answer(chatResponse.getResult().getOutput().getText());
+        String responseString=chatResponse.getResult().getOutput().getText();
+        responseString = responseString.replaceAll("```json","");
+        try {
+            JsonNode jsonNode = objectMapper.readTree(responseString);
+            responseString = jsonNode.get("answer").asText();
+        } catch (JsonProcessingException e) {
+            System.out.println("JSON mapping error");
+            System.out.println(responseString);
+            throw new RuntimeException(e);
+        }
+
+        //return new Answer(chatResponse.getResult().getOutput().getText());
+        return   new Answer(responseString);
     }
 
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Override
     public Answer getCapitalWithInfo(GetCapitalRequest getCapitalRequest) {
